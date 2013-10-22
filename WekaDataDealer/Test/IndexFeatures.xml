@@ -1,0 +1,67 @@
+﻿<features>
+  <feature name="tfidf" ignore="true" number="1"/>
+  <feature name="idf" ignore="true" number="2" />
+  <feature name="MaxQuoteDepth" ignore="false" number="3" />
+  <feature name="TopicStarterCited" ignore="false" number="4" />
+  <feature name="PositionInThread" ignore="false" number="5" />
+  <feature name="PostDistanceToThreadEnd" ignore="false" number="6" />
+  <feature name="PostTimeFromTopicStarterElapsed" ignore="false" number="7" />
+  <feature name="TimeFromPreviousPostElapsed" ignore="false" number="8" />
+  <feature name="ThreadLength" ignore="false" number="9" />
+  <feature name="PostQuoteLengthAverageThreadQuoteLengthRatio" ignore="false" number="10"/>
+  <feature name="AuthorOfPostIsQuestioner" ignore="false" number="11"/>
+  <feature name="PostWasEdited" ignore="false" number="12"/>
+  <feature name="PostPoints" ignore="false" number="13"/>
+  <feature name="TopicCitationCount" ignore="false" number="14"/>
+  <feature name="PostCitationCount" ignore="false" number="15"/>
+  <feature name="AuthorRating" ignore="false" number="16"/>
+  <feature name="AuthorForumAge" ignore="false" number="17"/>
+  <feature name="AuthorProfession" ignore="false" number="18"/>
+  <feature name="AuthorPostsCount" ignore="false" number="19"/>
+  <feature name="DistanceToThanks" ignore="false" number="20"/>
+  <feature name="QuestionMarksCount" ignore="false" number="23"/>
+  <feature name="PostLength" ignore="false" number="24"/>
+  <feature name="PunctuationsCount" ignore="false" number="25"/>
+  <feature name="UniquePunctuationsCount" ignore="false" number="26"/>
+  <feature name="QuoteMarksCount" ignore="false" number="27"/>
+  <feature name="QuotedWordsCount" ignore="false" number="28"/>
+  <feature name="QuotedWordsRatio" ignore="false" number="29"/>
+  <feature name="WordsCount" ignore="false" number="30"/>
+  <feature name="DigitsCount" ignore="false" number="31"/>
+  <feature name="NumbersCount" ignore="false" number="32"/>
+  <feature name="IsSmileContained" ignore="false" number="33"/>
+  <feature name="UpperLettersCount" ignore="false" number="34"/>
+  <feature name="GreetingWordContained" ignore="false" number="35"/>
+  <feature name="StopWordsRatio" ignore="false" number="36"/>
+  <feature name="ThankWordsContained" ignore="false" number="37"/>
+  <feature name="UserQuotesCount" ignore="false" number="38"/>
+  <feature name="HasQuotes" ignore="false" number="39"/>
+  <feature name="IsUrlContained" ignore="false" number="40"/>
+  <feature name="IsBuhWordsContained" ignore="true" number="41"/>
+  <feature name="IsTaxWordsContained" ignore="true" number="42"/>
+  <feature name="IsControlSystemWordsContained" ignore="true" number="43"/>
+  <feature name="IsFormWordsContained" ignore="true" number="44"/>
+  <feature name="HtmlTagsCount" ignore="false" number="45"/>
+  <feature name="IsTextHighlighted" ignore="false" number="46"/>
+  <feature name="AccentedWordsCount" ignore="false" number="47"/>
+  <feature name="IsFormulaContained" ignore="false" number="48"/>
+  <feature name="IsDateContained" ignore="false" number="49"/>
+  <feature name="QueryDependent" ignore="true" queryDependent="true" number="50" group="true"/>
+  <feature name="answerQueryWindowRatio" ignore="true" queryDependent="true" number="51" />
+  <feature name="questionQueryWindowRatio" ignore="true" queryDependent="true" number="60" />
+  <feature name="coveredAnswerQueryTermNumber" ignore="true" queryDependent="true" number="52" />
+  <feature name="coveredQuestionQueryTermNumber" ignore="true" queryDependent="true" number="58" />
+  <feature name="answerHasQueryWordsSequence" ignore="true" queryDependent="true" number="53" />
+  <feature name="questionHasQueryWordsSequence" ignore="true" queryDependent="true" number="59" />
+  <feature name="queryWordsInQuestionMetadocumentRatio" ignore="true" queryDependent="true" number="54" />
+  <feature name="queryWordsInAnswerMetadocumentRatio" ignore="true" queryDependent="true" number="55" />
+  <feature name="answerQueryWordsRatio" ignore="true" queryDependent="true" number="62" />
+  <feature name="questionQueryWordsRatio" ignore="true" queryDependent="true" number="63" />
+  <feature name="defaultScore" ignore="true" queryDependent="true" number="56" />
+  <feature name="queryWordsMaxSequenceInAnswerLength" ignore="true" queryDependent="true" number="57" />
+  <feature name="queryWordsMaxSequenceInQuestionLength" ignore="true" queryDependent="true" number="61" />
+  <feature name="answerQueryLengthDifference" ignore="true" queryDependent="true" number="64"/>
+  <feature name="questionQueryLengthDifference" ignore="true" queryDependent="true" number="65"/>
+  <feature name="answerQueryLengthRatio" ignore="true" queryDependent="true" number="66"/>
+  <feature name="questionQueryLengthRatio" ignore="true" queryDependent="true" number="67"/>
+</features>

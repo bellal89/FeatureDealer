@@ -1,0 +1,14 @@
+﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<s:String x:Key="/Default/CodeInspection/Highlighting/AnalysisEnabled/@EntryValue">SOLUTION</s:String>
+	<s:Boolean x:Key="/Default/Housekeeping/UnitTestingMru/UnitTestSessionPersistentData/=246FBF390FEB47238FF0D62E0874B74B/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/Housekeeping/UnitTestingMru/UnitTestSessionPersistentData/=246FBF390FEB47238FF0D62E0874B74B/Name/@EntryValue">WorkFeaturesTest</s:String>
+	<s:String x:Key="/Default/Housekeeping/UnitTestingMru/UnitTestSessionPersistentData/=246FBF390FEB47238FF0D62E0874B74B/XmlSerializedElements/@EntryValue">&lt;Session&gt;&lt;Elements&gt;&lt;UnitTestElement Provider="nUnit" Id="FeatureDealer.Test.WorkFeaturesTest" type="NUnitTestFixtureElement" Project="EBE5C6BD-1BBE-4FDD-B724-4D9A76FA8D3E" /&gt;&lt;UnitTestElement Provider="nUnit" Id="FeatureDealer.Test.WorkFeaturesTest.TestCalculateEvaluationFeatures" ParentId="FeatureDealer.Test.WorkFeaturesTest" type="NUnitTestElement" TypeName="FeatureDealer.Test.WorkFeaturesTest" MethodName="TestCalculateEvaluationFeatures" Project="EBE5C6BD-1BBE-4FDD-B724-4D9A76FA8D3E" /&gt;&lt;UnitTestElement Provider="nUnit" Id="FeatureDealer.Test.WorkFeaturesTest.TestCalculateIndexFeatures" ParentId="FeatureDealer.Test.WorkFeaturesTest" type="NUnitTestElement" TypeName="FeatureDealer.Test.WorkFeaturesTest" MethodName="TestCalculateIndexFeatures" Project="EBE5C6BD-1BBE-4FDD-B724-4D9A76FA8D3E" /&gt;&lt;/Elements&gt;&lt;/Session&gt;</s:String>
+	
+	
+	
+	
+	
+	
+	
+	
+	</wpf:ResourceDictionary>

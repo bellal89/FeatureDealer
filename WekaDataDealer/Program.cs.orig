@@ -1,0 +1,197 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Data.Entity;
+using System.Linq;
+using System.Text.RegularExpressions;
+using WekaDataDealer.Data;
+using WekaDataDealer.DataProviders;
+using WekaDataDealer.FeatureCalculators;
+using WekaDataDealer.Models.MappedClasses;
+using cqa_medical.UtilitsNamespace;
+using WekaDataDealer.Models;
+using System.Data.Entity.Migrations;
+
+namespace WekaDataDealer
+{
+    static class Program
+    {
+        static void Main(string[] args)
+        {
+<<<<<<< local
+            CalcAllMessageFeatures();
+=======
+            CalcEvaluationFeaturesWithoutLabels();
+>>>>>>> other
+        }
+        
+        private static void GenerateFirstSentences(string fileToSave)
+        {
+            var regex = new Regex(@"([\w\s]+)");
+            var context = new BuhonlineContext();
+            var messages = context.yaf_Message.Where(p => p.Position == 0).Select(p => p.Message).ToList();
+            var sentences = messages.Select(m => regex.Match(m).Value);
+            File.WriteAllLines(fileToSave, sentences.DistinctAndNotWhitespace());
+        }
+
+        private static void GenerateCloseWordsFor(string expectedWord, int maxDistance, string fileToSave)
+        {
+            var closeWords = new HashSet<string>();
+            var len = expectedWord.Length;
+            var context = new BuhonlineContext();
+            var messages = context.yaf_Message.Select(p => p.Message);
+            foreach (var message in messages)
+            {
+                foreach (var s in message.StripQuotesStripBBcodeSplitInWordsLower())
+                {
+                    if (s.Length < len - 1 || s.Length > len + 1) continue;
+                    var distance = expectedWord.LevensteinDistance(s);
+                    if (distance <= maxDistance)
+                        closeWords.Add(s);
+                }
+            }
+            var distinctCloseWords = closeWords.SelectMany(s => s.SplitIntoWordsLower()).DistinctAndNotWhitespace();
+            File.WriteAllLines(fileToSave, distinctCloseWords.OrderBy(s => s));
+        }
+
+        private static void ImportDataFromDB(string fileToSave)
+        {
+            IDataReader reader = new BuhonlineDatabaseDataReader();
+            List<IDataItem> posts = reader.GetDataItems().Where(post => !(post.GetText().ToLower().StartsWith("спасибо") || post.GetText().ToLower().StartsWith("благодар"))).ToList();
+
+            if (posts.Count > 2000)
+            {
+                var randomPosts = new List<IDataItem>();
+                var rand = new Random();
+                for (var i = 0; i < 2000; i++)
+                {
+                    var id = rand.Next(posts.Count - i);
+                    randomPosts.Add(posts[id]);
+                    var post = posts[posts.Count - 1 - i];
+                    posts[posts.Count - 1 - i] = posts[id];
+                    posts[id] = post;
+                }
+
+                var writer = new TextDataWriter(fileToSave);
+                writer.SaveData(randomPosts);
+            }
+        }
+
+        private static void CalcAllMessageFeatures()
+        {
+            var featureVectors = new List<Tuple<yaf_Message, List<object>>>();
+            var calc = new FeatureCalculator();
+            var reader = new BuhonlineDatabaseDataReader();
+            var messages = reader.GetDataItems().Cast<yaf_Message>();
+
+            foreach(var message in messages)
+            {
+                featureVectors.Add(Tuple.Create(message,
+                                                calc.GetValuesByParam(message.Message).Concat(
+                                                    calc.GetValuesByParam(message)).ToList()));
+            }
+            SVMFeatureVectorWriter.Save("AllBuhFeatureVectors.txt", featureVectors);
+            File.WriteAllLines("AllBuhFeatureNames.txt",
+                   calc.GetNamesByParamType(typeof(string)).Concat(
+                       calc.GetNamesByParamType(typeof(yaf_Message))));
+        }
+
+        private static void CalcEvaluationFeatures()
+        {
+            var evaluationContext = (EvaluationDBContext) EvalsDBConnection.GetInstance().GetContext;
+            var buhOnlineContext = (BuhonlineContext) BuhOnlineDBConnection.GetInstance().GetContext;
+            IDataReader reader = new BuhonlineAssessmentsDataReader(evaluationContext, buhOnlineContext);
+            var evals = reader.GetDataItems().Cast<MessageEvaluation>();
+            var features = new FeatureCalculator();
+
+            var evalFeatureVectors = new List<Tuple<MessageEvaluation, List<object>>>();
+            foreach (var eval in evals)
+            {
+                evalFeatureVectors.Add(Tuple.Create(eval,
+                                                    features.GetValuesByParam(eval.Message.Message).Concat(
+                                                        features.GetValuesByParam(eval.Message)).ToList()));
+            }
+            SVMFeatureVectorWriter.Save("BuhFeatureVectors.txt", evalFeatureVectors);
+            File.WriteAllLines("BuhFeatureNames.txt",
+                               features.GetNamesByParamType(typeof (string)).Concat(
+                                   features.GetNamesByParamType(typeof (yaf_Message))));
+        }
+
+        private static void CalcEvaluationFeaturesWithoutLabels()
+        {
+            var buhOnlineContext = (BuhonlineContext) BuhOnlineDBConnection.GetInstance().GetContext;
+            var featureCalculator = new ForumPostFeatureCalculator();
+
+            var evals = buhOnlineContext.yaf_Message
+                .Where(p => !p.IsDeleted.Value).ToArray()
+                .Select(m => new List<object>(new object[]{m.MessageID}.Concat(featureCalculator.CalculateFeatures(m))));
+
+            SVMFeatureVectorWriter.SaveWithoutLabels("BuhFeatureVectors.txt", evals);
+        }
+
+        private static void CalcGratitudePostTestFeatures()
+        {
+            var buhOnlineContext = (BuhonlineContext) BuhOnlineDBConnection.GetInstance().GetContext;
+            var featureCalculator = new GratitudeForumPostFeatureCalculator();
+            
+            var evalFeatureVectors = new List<List<object>>();
+            var i = 0;
+            foreach (var postIdWithScore in FileProcessing.ThankPostWithScores)
+            {
+                var messageId = postIdWithScore.Key;
+                var isThank = postIdWithScore.Value;
+                Debug.Assert(isThank == 1 || isThank == 0);
+                Console.WriteLine(i++);
+                var post = buhOnlineContext.yaf_Message.First(p => p.MessageID == messageId);
+                Console.WriteLine(post.Message.Length);
+                evalFeatureVectors.Add(new List<object>(featureCalculator.CalculateFeatures(post).Concat(new object[] { isThank, messageId})));
+            }
+            var writer = new ArffGratitudeFeatureVectorWriter("gratitude.arff", "gratitude");
+
+            writer.SaveData(evalFeatureVectors);
+        }
+
+        private static void CalcGratitudePostFeatures()
+        {
+            var buhOnlineContext = (BuhonlineContext)BuhOnlineDBConnection.GetInstance().GetContext;
+            var featureCalculator = new GratitudeForumPostFeatureCalculator();
+            var writer = new ArffGratitudeFeatureVectorWriter("gratitude2.arff", "gratitude");
+            writer.SaveData(GetFeatures(buhOnlineContext, featureCalculator));
+        }
+        
+        private static IEnumerable<List<object>> GetFeatures(BuhonlineContext buhonlineContext, GratitudeForumPostFeatureCalculator featureCalculator)
+        {
+            foreach (var post in buhonlineContext.yaf_Message)
+            {
+                Console.WriteLine(post.MessageID);
+                yield return  new List<object>(featureCalculator.CalculateFeatures(post).Concat(new object[] { post.MessageID }));
+            }
+        }
+
+        private static void SaveGratitudeFeaturesToBase()
+        {
+            var featuresContext = (FeaturesContext)FeaturesDBConnection.GetInstance().GetContext;
+            int d = 0;
+            IEnumerable<KeyValuePair<int, int>> postFeatures = FileProcessing.MessageIdAndIsThankPost.SkipWhile(p => p.Key < d);
+            var features = new Dictionary<int, int>();
+            foreach (var postFeature in postFeatures)
+            {
+                features.Add(postFeature.Key, postFeature.Value);
+                //featuresContext.PostFeatures.AddOrUpdate(postFeature);
+                if (postFeature.Key > d)
+                {
+                    //                    featuresContext.PostFeatures.AddRange()
+                    featuresContext.PostFeatures.AddRange(
+                        features.Select(f => new PostFeature() { MessageId = f.Key, isThanks = f.Value }));
+                    //featuresContext.PostFeatures.AddOrUpdate(features);
+                    Console.Out.WriteLine(postFeature.Key);
+                    d += 5000;
+                    featuresContext.SaveChanges();
+                    features = new Dictionary<int, int>();
+                }
+            }
+            featuresContext.SaveChanges();
+        }
+    }
+}
