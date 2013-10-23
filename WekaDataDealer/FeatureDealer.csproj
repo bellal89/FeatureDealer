@@ -130,12 +130,11 @@
     <Compile Include="Models\Mapping\RequestMap.cs" />
     <Compile Include="Models\MappedClasses\Post.cs" />
     <Compile Include="Models\MappedClasses\Request.cs" />
-    <Compile Include="Models\NormativeQAContext.cs" />
     <Compile Include="Preprocessing.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Format\ArffGratitudeFeatureVectorWriter.cs" />
-    <Compile Include="Format\SparseFormat.cs" />
+    <Compile Include="Format\SparseFormatWriter.cs" />
     <Compile Include="RuLemmatizer\Lemmatizer.cs" />
     <Compile Include="Test\FeatureListBuilderTest.cs" />
     <Compile Include="Test\WorkFeaturesTest.cs" />

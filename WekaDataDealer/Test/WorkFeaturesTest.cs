@@ -21,6 +21,7 @@ namespace FeatureDealer.Test
                 File.Delete(evaluationFilepath);
             Program.PrepareData();
             using (var evaluationDataReader = new EvaluationDataReader())
+            using (var sparseFormatWriter = new SparseFormatWriter(evaluationFilepath))
             {
                 const string featuresFilepath = @"Test\Features.xml";
                 var featuresList = FeatureListBuilder.GetFeaturesList(featuresFilepath);
@@ -34,10 +35,10 @@ namespace FeatureDealer.Test
                     {
                         var messageId = evaluation.PostId;
                         IEnumerable<Feature> qiFeatures = featureCalculator.Calculate(new FeatureParameters { MessageId = messageId });
-                        IEnumerable<Feature> qdFeatures = qdFeatureCalculator.Calculate(new QueryDependentFeatureParameters {MessageId = messageId, Query = request.Text});
+                        IEnumerable<Feature> qdFeatures = qdFeatureCalculator.Calculate(new QueryDependentFeatureParameters { MessageId = messageId, Query = request.Text });
                         var features = qiFeatures.Concat(qdFeatures);
                         int relevance = evaluation.Relevance ?? 0;
-                        SparseFormat.Append(evaluationFilepath, new List<PostData> { new PostData { PostId = messageId, Features = features, RequestId = evaluation.RequestId, Label = relevance} });
+                        sparseFormatWriter.Append(new List<PostData> { new PostData { PostId = messageId, Features = features, RequestId = evaluation.RequestId, Label = relevance } });
                     }
                 }
             }
@@ -51,6 +52,7 @@ namespace FeatureDealer.Test
                 File.Delete(indexFilepath);
             Program.PrepareData();
             using (var buhonlineDataReader = new BuhonlineDataReader())
+            using (var sparseFormatWriter = new SparseFormatWriter(indexFilepath))
             {
                 const string featuresFilepath = @"Test\IndexFeatures.xml";
                 var featuresList = FeatureListBuilder.GetFeaturesList(featuresFilepath);
@@ -59,9 +61,9 @@ namespace FeatureDealer.Test
                 foreach (int messageId in messageIds)
                 {
                     var featureVectors = new List<PostData>();
-                    IEnumerable<Feature> messageFeatures = featureCalculator.Calculate(new FeatureParameters {MessageId = messageId});
-                    featureVectors.Add(new PostData {PostId = messageId, Features = messageFeatures});
-                    SparseFormat.Append(indexFilepath, featureVectors);
+                    IEnumerable<Feature> messageFeatures = featureCalculator.Calculate(new FeatureParameters { MessageId = messageId });
+                    featureVectors.Add(new PostData { PostId = messageId, Features = messageFeatures });
+                    sparseFormatWriter.Append(featureVectors);
                 }
             }
         }

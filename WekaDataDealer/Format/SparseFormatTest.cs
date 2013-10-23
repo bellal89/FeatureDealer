@@ -39,7 +39,7 @@ namespace FeatureDealer.Format
                                                           }
                                        }
                                };
-            SparseFormat.AddFeaturesToExisting(postData, sparseFeaturesFilepath, updatedFeaturesFilepath, true);
+            SparseFormatWriter.AddFeaturesToExisting(postData, sparseFeaturesFilepath, updatedFeaturesFilepath, true);
             var updatedTemplateFileInfo = new FileInfo(expectedUpdatedFeaturesFilepath);
             var updatedFeaturesFileInfo = new FileInfo(updatedFeaturesFilepath);
             FileAssert.AreEqual(updatedTemplateFileInfo, updatedFeaturesFileInfo);
@@ -129,10 +129,10 @@ namespace FeatureDealer.Format
                                   };
             const string savedFeaturesFilepath = @"Test\SavedFeatures.sparse";
             const string expectedSavedFeaturesFilepath = @"Test\ExpectedSavedFeatures.sparse";
-            SparseFormat.Save(savedFeaturesFilepath,
+            SparseFormatWriter.Save(savedFeaturesFilepath,
                               featureData.Select(
                                   f =>
-                                  new SparseFormat.SparseData
+                                  new SparseFormatWriter.SparseData
                                       {Features = f.Features, PostId = f.PostId, Qid = f.RequestId}));
             var savedFeaturesFileInfo = new FileInfo(savedFeaturesFilepath);
             var expectedFeaturesFileInfo = new FileInfo(expectedSavedFeaturesFilepath);
@@ -142,7 +142,7 @@ namespace FeatureDealer.Format
         [Test]
         public void TestRemoveFeaturesByNumber()
         {
-            SparseFormat.RemoveFeaturesWithNumbers(new[] { 45, 46 }, @"Test\BuhFeatureVectors.txt", @"Test\RemovedBuhFeatureVectors.txt");
+            SparseFormatWriter.RemoveFeaturesWithNumbers(new[] { 45, 46 }, @"Test\BuhFeatureVectors.txt", @"Test\RemovedBuhFeatureVectors.txt");
             var removedBuhFeaturesFileInfo = new FileInfo(@"Test\RemovedBuhFeatureVectors.txt");
             var expectedRemovedBuhFeaturesFileInfo = new FileInfo(@"Test\ExpectedRemovedBuhFeatureVectors.txt");
             FileAssert.AreEqual(removedBuhFeaturesFileInfo, expectedRemovedBuhFeaturesFileInfo);
@@ -152,7 +152,7 @@ namespace FeatureDealer.Format
         public void TestSortFeatures()
         {
             const string sortedFeaturesFilepath = @"Test\SortedFeatureVectors.txt";
-            SparseFormat.SortFeatures(@"Test\UnsortedFeatureVectors.txt", sortedFeaturesFilepath);
+            SparseFormatWriter.SortFeatures(@"Test\UnsortedFeatureVectors.txt", sortedFeaturesFilepath);
             var sortedFeaturesFileInfo = new FileInfo(sortedFeaturesFilepath);
             var expectedSortedFeatureVectors = new FileInfo(@"Test\ExpectedSortedFeatureVectors.txt");
             FileAssert.AreEqual(sortedFeaturesFileInfo, expectedSortedFeatureVectors);
@@ -163,7 +163,7 @@ namespace FeatureDealer.Format
         {
             IEnumerable<Feature> features = new []{new Feature{Name = "TestFeature1", Number = 1}, new Feature{Name = "TestFeature2", Number = 2} };
             const string savedFeaturesMetadataFilepath = @"Test\FeaturesMetadata.txt";
-            SparseFormat.SaveMetadata(features, savedFeaturesMetadataFilepath);
+            SparseFormatWriter.SaveMetadata(features, savedFeaturesMetadataFilepath);
             var savedFeaturesFileInfo = new FileInfo(savedFeaturesMetadataFilepath);
             var expectedSavedFeaturesFileInfo = new FileInfo(@"Test\ExpectedSavedFeaturesMetadata.txt");
             FileAssert.AreEqual(savedFeaturesFileInfo, expectedSavedFeaturesFileInfo);

@@ -14,26 +14,26 @@ namespace FeatureDealer
     {
         private static void Main(string[] args)
         {
-            if(args.Length == 0)
+            if (args.Length == 0)
             {
                 Console.WriteLine("Usage: FeatureDealer.exe [E] [C] \r\n E = 'eval' or 'index'\r\n C is path to features configuration file like Test\\Features.xml");
                 return;
             }
             string configuration = string.Empty;
-            if(args.Length > 1) configuration = args[1];
+            if (args.Length > 1) configuration = args[1];
             string evaluation = args[0];
-            if(!(evaluation.Equals("eval") || evaluation.Equals("index")))
+            if (!(evaluation.Equals("eval") || evaluation.Equals("index")))
             {
                 Console.WriteLine("Unknown E option {0}. Possible values are 'eval' or 'index'");
             }
-            if(evaluation.Equals("eval"))
+            if (evaluation.Equals("eval"))
             {
-                if(string.IsNullOrEmpty(configuration))
+                if (string.IsNullOrEmpty(configuration))
                     configuration = @"Test\Features.xml";
                 CalculateEvaluationFeatures("./Evaluation.txt", configuration);
                 return;
             }
-            if(evaluation.Equals("index"))
+            if (evaluation.Equals("index"))
             {
                 if (string.IsNullOrEmpty(configuration))
                     configuration = @"Test\IndexFeatures.xml";
@@ -60,6 +60,7 @@ namespace FeatureDealer
                 File.Delete(indexFilepath);
             PrepareData();
             using (var buhonlineDataReader = new BuhonlineDataReader())
+            using (var sparseFormatWriter = new SparseFormatWriter(indexFilepath))
             {
                 var featuresList = FeatureListBuilder.GetFeaturesList(featuresFilepath);
                 var messageIds = buhonlineDataReader.ReadAnswerIds();
@@ -69,7 +70,7 @@ namespace FeatureDealer
                     var featureVectors = new List<PostData>();
                     IEnumerable<Feature> messageFeatures = featureCalculator.Calculate(new FeatureParameters { MessageId = messageId });
                     featureVectors.Add(new PostData { PostId = messageId, Features = messageFeatures });
-                    SparseFormat.Append(indexFilepath, featureVectors);
+                    sparseFormatWriter.Append(featureVectors);
                 }
             }
         }
@@ -80,6 +81,7 @@ namespace FeatureDealer
                 File.Delete(evaluationFilepath);
             PrepareData();
             using (var evaluationDataReader = new EvaluationDataReader())
+            using (var sparseFormatWriter = new SparseFormatWriter(evaluationFilepath))
             {
                 var featuresList = FeatureListBuilder.GetFeaturesList(featuresFilepath);
                 var requests = evaluationDataReader.ReadRequests();
@@ -95,17 +97,11 @@ namespace FeatureDealer
                         IEnumerable<Feature> qdFeatures = qdFeatureCalculator.Calculate(new QueryDependentFeatureParameters { MessageId = messageId, Query = request.Text });
                         var features = qiFeatures.Concat(qdFeatures);
                         int relevance = evaluation.Relevance ?? 0;
-                        SparseFormat.Append(evaluationFilepath, new List<PostData> { new PostData { PostId = messageId, Features = features, RequestId = evaluation.RequestId, Label = relevance } });
+                        sparseFormatWriter.Append(new List<PostData> { new PostData { PostId = messageId, Features = features, RequestId = evaluation.RequestId, Label = relevance } });
                     }
                 }
             }
         }
-    }
-
-    public class EvaluationData
-    {
-        public Request Request;
-        public int MessageId;
     }
 
     public class PostData

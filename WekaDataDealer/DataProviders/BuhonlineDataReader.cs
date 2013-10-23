@@ -15,44 +15,9 @@ namespace FeatureDealer.DataProviders
             context.Dispose();
         }
 
-        public IEnumerable<IDataItem> ReadUselessTopics(IEnumerable<int> uselessForumIds)
-        {
-            return context.yaf_Topic.Where(t => uselessForumIds.Contains(t.ForumID));
-        }
-
-        public IEnumerable<IDataItem> ReadDeletedMessages()
-        {
-            return context.yaf_Message.Where(p => p.IsDeleted == true);
-        }
-
-        public IEnumerable<IDataItem> Read(IEnumerable<int> messageIds)
-        {
-            return context.yaf_Message.Where(p => p.IsDeleted == false && messageIds.Contains(p.MessageID));
-        }
-
         public IEnumerable<IDataItem> Read()
         {
             return context.yaf_Message;
-        }
-
-        public IEnumerable<int> ReadIds()
-        {
-            return context.yaf_Message.Select(m => m.MessageID);
-        }
-
-        public IEnumerable<yaf_Message> ReadTopicStarters(IEnumerable<int> topicIds)
-        {
-            return context.yaf_Message.Where(m => topicIds.Contains(m.TopicID) && m.IsDeleted == false && m.Position == 0);
-        }
-
-        public IEnumerable<yaf_Message> ReadTopicStarters()
-        {
-            return context.yaf_Message.Where(m => m.Position == 0);
-        }
-
-        public IEnumerable<UserPersonal> ReadUserPersonals()
-        {
-            return context.UserPersonals;
         }
 
         public IQueryable<string> ReadMessageTexts()
